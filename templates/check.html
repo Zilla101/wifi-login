@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block wrapclass %}wide{% endblock %}
+{% block body %}
+<div class="card">
+  <h1>Router check</h1>
+  <p class="sub">Open the router's admin page, go to its list of connected devices, select the whole list,
+    copy it, and paste it here.</p>
+  <form method="post">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <textarea name="devices" rows="8" placeholder="Paste the connected devices list here"
+      style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e1118;color:var(--text);font:13px monospace">{{ text }}</textarea>
+    <button class="full">Check</button>
+  </form>
+</div>
+{% if results %}
+<div class="card">
+  <h2>On the WiFi now</h2>
+  {% for r in results %}
+    <div class="row">
+      <div class="grow">{{ r.name or "Device" }} <code>{{ r.ip }} · {{ r.mac }}</code></div>
+      <span class="pill {{ 'ok' if r.status == 'ok' else 'err' if r.status in ('stranger', 'blocked') else 'admin' }}">{{ r.who }}</span>
+    </div>
+  {% endfor %}
+</div>
+<div class="card">
+  <h2>Put these in the router's MAC blacklist</h2>
+  {% if to_block %}
+    <textarea readonly rows="{{ to_block|length + 1 }}" onclick="this.select()"
+      style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e1118;color:var(--text);font:14px monospace">{{ to_block|join("\n") }}</textarea>
+    <p class="muted">Tap to select, then copy. In the router: WiFi settings → MAC filter → Blacklist → add each one.</p>
+  {% else %}
+    <p class="muted">Nobody to block — everyone online has signed in.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -20,5 +20,5 @@
     <button class="full">{{ "Create account & connect" if tab == "signup" else "Sign in & connect" }}</button>
   </form>
 </div>
-<p class="muted" style="text-align:center">Each account can connect a limited number of devices.<br>Don't share your password — it uses up your slots.</p>
+<p class="muted" style="text-align:center">Each account can connect a limited number of devices.<br>Don't share your password — it uses up your slots.{% if manual %}<br>Devices that don't sign in get removed from the WiFi.{% endif %}</p>
 {% endblock %}

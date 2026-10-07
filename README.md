@@ -16,6 +16,27 @@ cp .env.example .env      # set ADMIN_PHONE / ADMIN_PASSWORD
 python3 app.py            # http://localhost:8080  (PORTAL_BACKEND=dryrun just logs)
 ```
 
+## On a spare Android phone + any router (e.g. Airtel ZTE ODU)
+
+The phone hosts the sign-in site. The router stays in charge of the internet, so you do
+the blocking yourself with the router's own **MAC filter → Blacklist**. The portal
+tells you exactly which MACs to block.
+
+1. Install **Termux** and **Termux:Boot** from F-Droid (the Play Store Termux is outdated).
+2. Copy this folder onto the phone, create `.env` from `.env.example` (ADMIN_PHONE, ADMIN_PASSWORD).
+3. In Termux: `bash setup/termux.sh`, then `termux-wake-lock; python app.py`.
+4. Give the phone a **fixed IP** so the address never changes: Android WiFi settings →
+   the network → Advanced → IP settings: Static (e.g. `192.168.0.200`).
+5. In Android settings, turn off battery optimisation for Termux and keep the phone charging.
+6. Share the address (e.g. `http://192.168.0.200:8080`) in your group chat.
+
+**Checking who's freeloading:** open `/admin` → **Router check**. Copy the connected-devices
+list from the router's admin page, paste it in, and you get a list of every device that
+hasn't signed in or belongs to a blocked account. Copy those MACs into the router's blacklist.
+When you block or delete an account, the portal shows that account's MACs to blacklist.
+
+No popup appears in this mode, so people have to open the address themselves.
+
 ## Hook it to real WiFi
 
 The page alone doesn't block anything; something on the network has to hold devices back

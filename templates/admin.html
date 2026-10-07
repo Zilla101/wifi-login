@@ -6,6 +6,15 @@
   <div><b>{{ total_devices }}</b><span class="muted">devices</span></div>
   <div><b>{{ default_limit }}</b><span class="muted">default device limit</span></div>
 </div>
+{% if manual %}
+<div class="card">
+  <div class="row" style="padding-top:0">
+    <div class="grow">Portal address to share: <b>{{ address }}</b>
+      <div class="muted">Find out who's on the WiFi without signing in.</div></div>
+    <a class="btn" href="{{ url_for('admin_check') }}">Router check</a>
+  </div>
+</div>
+{% endif %}
 {% for u in users %}
 <div class="card">
   <div class="row" style="padding-top:0">
@@ -18,9 +27,9 @@
   </div>
   {% for d in by_user[u.id] %}
     <div class="row">
-      <div class="grow">{{ d.label }} <code>{{ d.mac }} · {{ d.ip }}</code></div>
+      <div class="grow">{{ d.label }} <code>{{ d.mac or "MAC unknown" }} · {{ d.ip }}</code></div>
       <form method="post" action="{{ url_for('admin_remove_device', dev_id=d.id) }}" class="inline">
-        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">Kick</button>
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">{{ "Remove" if manual else "Kick" }}</button>
       </form>
     </div>
   {% endfor %}
