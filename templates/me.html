@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card">
+  <h1>{{ "You're online" if connected else "Not connected yet" }}</h1>
+  <p class="sub">{{ me.phone }}{% if me.is_admin %} · <span class="pill admin">super admin</span>{% endif %}</p>
+  {% if limit is not none %}
+    <div class="muted">{{ devices|length }} of {{ limit }} devices used</div>
+    <div class="meter"><i style="width:{{ [100, (devices|length * 100 // (limit or 1))]|min }}%"></i></div>
+  {% else %}
+    <div class="muted">{{ devices|length }} devices · no limit</div>
+  {% endif %}
+  {% if not connected %}
+    <form method="post" action="{{ url_for('connect_here') }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}"><button class="full">Connect this device</button>
+    </form>
+  {% endif %}
+</div>
+<div class="card">
+  <h2>Your devices</h2>
+  {% for d in devices %}
+    <div class="row">
+      <div class="grow">
+        <div>{{ d.label }} {% if d.mac == here %}<span class="pill ok">this device</span>{% endif %}</div>
+        <code>{{ d.mac }}</code>
+      </div>
+      <form method="post" action="{{ url_for('remove_own_device', dev_id=d.id) }}" class="inline"
+            onsubmit="return confirm('Remove this device? It will lose internet.')">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">Remove</button>
+      </form>
+    </div>
+  {% else %}
+    <p class="muted">No devices yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

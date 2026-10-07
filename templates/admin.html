@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block wrapclass %}wide{% endblock %}
+{% block body %}
+<div class="card stats">
+  <div><b>{{ users|length }}</b><span class="muted">accounts</span></div>
+  <div><b>{{ total_devices }}</b><span class="muted">devices</span></div>
+  <div><b>{{ default_limit }}</b><span class="muted">default device limit</span></div>
+</div>
+{% for u in users %}
+<div class="card">
+  <div class="row" style="padding-top:0">
+    <div class="grow">
+      <b>{{ u.phone }}</b>
+      {% if u.is_admin %}<span class="pill admin">super admin</span>{% endif %}
+      {% if u.blocked %}<span class="pill err">blocked</span>{% endif %}
+      <div class="muted">{{ u.n }} device{{ "" if u.n == 1 else "s" }}{% if not u.is_admin %} · limit {{ u.device_limit if u.device_limit is not none else default_limit }}{% endif %}</div>
+    </div>
+  </div>
+  {% for d in by_user[u.id] %}
+    <div class="row">
+      <div class="grow">{{ d.label }} <code>{{ d.mac }} · {{ d.ip }}</code></div>
+      <form method="post" action="{{ url_for('admin_remove_device', dev_id=d.id) }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">Kick</button>
+      </form>
+    </div>
+  {% endfor %}
+  {% if not u.is_admin %}
+  <div class="actions">
+    {% if u.blocked %}
+      <form method="post" action="{{ url_for('admin_user', uid=u.id, action='unblock') }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost small">Unblock</button></form>
+    {% else %}
+      <form method="post" action="{{ url_for('admin_user', uid=u.id, action='block') }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">Block</button></form>
+    {% endif %}
+    <form method="post" action="{{ url_for('admin_user', uid=u.id, action='limit') }}" class="inline">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <input name="limit" type="number" min="0" max="50" placeholder="{{ default_limit }}" value="{{ u.device_limit if u.device_limit is not none else '' }}">
+      <button class="ghost small">Set limit</button></form>
+    <form method="post" action="{{ url_for('admin_user', uid=u.id, action='password') }}" class="inline">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <input name="password" class="pw" type="text" placeholder="new password" minlength="6" required>
+      <button class="ghost small">Reset pw</button></form>
+    <form method="post" action="{{ url_for('admin_user', uid=u.id, action='delete') }}" class="inline"
+          onsubmit="return confirm('Delete {{ u.phone }} and kick all their devices?')">
+      <input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger small">Delete</button></form>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

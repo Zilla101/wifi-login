@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card">
+  <h1>{{ "Get online" if tab == "signup" else "Welcome back" }}</h1>
+  <p class="sub">{{ "Create an account with your phone number." if tab == "signup" else "Sign in to use the WiFi." }}</p>
+  <div class="tabs">
+    <a href="{{ url_for('index') }}" class="{{ 'on' if tab != 'signup' }}">Sign in</a>
+    <a href="{{ url_for('index', tab='signup') }}" class="{{ 'on' if tab == 'signup' }}">Create account</a>
+  </div>
+  <form method="post" action="{{ url_for('signup' if tab == 'signup' else 'login') }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Phone number</label>
+    <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0803 123 4567" required autofocus>
+    <label>Password</label>
+    <input name="password" type="password" autocomplete="{{ 'new-password' if tab == 'signup' else 'current-password' }}" minlength="6" required>
+    {% if tab == "signup" %}
+      <label>Confirm password</label>
+      <input name="confirm" type="password" autocomplete="new-password" minlength="6" required>
+    {% endif %}
+    <button class="full">{{ "Create account & connect" if tab == "signup" else "Sign in & connect" }}</button>
+  </form>
+</div>
+<p class="muted" style="text-align:center">Each account can connect a limited number of devices.<br>Don't share your password — it uses up your slots.</p>
+{% endblock %}
