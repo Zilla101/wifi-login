@@ -21,7 +21,16 @@ python3 app.py            # http://localhost:8080  (PORTAL_BACKEND=dryrun just l
 The page alone doesn't block anything; something on the network has to hold devices back
 until they sign in. Pick the setup that matches your hardware:
 
-**A. Raspberry Pi or Linux laptop as the gateway** (works with any router or MiFi)
+**Airtel ODU / Raspberry Pi (the quick path)**
+Plug the ODU's ethernet (from its PoE adapter) into the Pi, then:
+```bash
+sudo ./setup/install_pi.sh "Room WiFi" "hotspotpassword"
+```
+That creates the hotspot, turns on the firewall and starts the portal on every boot.
+**Turn off the ODU's own WiFi** (or give it a long secret password). Anyone who
+joins it directly skips the portal.
+
+**A. Raspberry Pi or Linux laptop as the gateway, by hand** (works with any router or MiFi)
 Internet comes in on one interface (e.g. the MiFi over USB or `eth0`) and the Pi or laptop
 runs the hotspot people join (e.g. `nmcli dev wifi hotspot ifname wlan0 ssid RoomWiFi password ...`).
 ```bash
